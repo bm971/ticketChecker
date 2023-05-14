@@ -24,7 +24,7 @@ smtp_server = "smtp.gmail.com"
 email_sender = "bm9711111111@gmail.com"
 email_password = gmailpwd
 email_receiver = "bakonyimark9785@gmail.com"
-subject = "VAN RAMMSTEIN JEEEEEGY!!!!!!!!!!!!!!!!!!!!!"
+subject = "[TESZT!!!!]    VAN RAMMSTEIN JEEEEEGY!!!!!!!!!!!!!!!!!!!!!"
 
 def happymail(body):
     em = EmailMessage()
@@ -53,6 +53,10 @@ def createAndSendMail(ticketAvailable):
         for data in doc.findAll("div", {"id": "select-tickets"}): # print out the relevant section (the "select-tickets" class) of the website
             print(data)
         happymessage = """
+        ###############################################################################
+        TESZT!!!!  TESZT!!!!  TESZT!!!!  TESZT!!!!  TESZT!!!!  TESZT!!!!  TESZT!!!!  
+        ###############################################################################
+        
         Van jegy, kurva gyorsan vegyel!!!!!!!!!!!!
 
         Itt a link te paraszt: https://tickets.funcode.hu/event/rammstein-allohely-2023

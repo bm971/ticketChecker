@@ -6,6 +6,7 @@ import requests
 from email.message import EmailMessage
 import smtplib
 import ssl
+import datetime
 
 import pathlib
 scriptpath = pathlib.Path(__file__).parent.resolve()
@@ -14,6 +15,10 @@ print(scriptpath)
 f = open(scriptpath/".AUTH","r")
 gmailpwd = f.read()
 print(gmailpwd)
+
+datetag = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+filename = 'scraping_result_'+datetag+'.log'
+filemsg = []
 
 url = "https://tickets.funcode.hu/event/rammstein-allohely-2023"
 result = requests.get(url)
@@ -24,7 +29,7 @@ smtp_server = "smtp.gmail.com"
 email_sender = "bm9711111111@gmail.com"
 email_password = gmailpwd
 email_receiver = "bakonyimark9785@gmail.com"
-subject = "[TESZT!!!!]    VAN RAMMSTEIN JEEEEEGY!!!!!!!!!!!!!!!!!!!!!"
+subject = "TESZT   VAN RAMMSTEIN JEEEEEGY!!!!!!!!!!!!!!!!!!!!!"
 
 def happymail(body):
     em = EmailMessage()
@@ -56,7 +61,7 @@ def createAndSendMail(ticketAvailable):
         ###############################################################################
         TESZT!!!!  TESZT!!!!  TESZT!!!!  TESZT!!!!  TESZT!!!!  TESZT!!!!  TESZT!!!!  
         ###############################################################################
-        
+
         Van jegy, kurva gyorsan vegyel!!!!!!!!!!!!
 
         Itt a link te paraszt: https://tickets.funcode.hu/event/rammstein-allohely-2023
@@ -67,6 +72,13 @@ def createAndSendMail(ticketAvailable):
         """
         happymessage += str(data)
         happymail(happymessage)
+        filemsg.append("Volt elado jegy"+datetag+"-kor:DDDDDDD")
+    else:
+        filemsg.append("Nem volt elado jegy "+datetag+"-kor:(((((")
+    logfile = open("/var/log/scripts/ticketChecker/"+filename, "w")
+    logfile.write(str(filemsg))
+    print(filemsg)
+    logfile.close()
 
 availability = doc.findAll("em")
 ticketTypeNumber = len(availability) # number of elements in the availability array

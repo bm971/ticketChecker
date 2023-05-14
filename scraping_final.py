@@ -11,8 +11,9 @@ import datetime
 import pathlib
 scriptpath = pathlib.Path(__file__).parent.resolve()
 
-f = open(scriptpath/".AUTH","r")
-gmailpwd = f.read()
+auth = open(scriptpath/".AUTH","r")
+gmailpwd = auth.read()
+auth.close()
 
 datetag = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 filename = 'scraping_result_'+datetag+'.log'
@@ -38,9 +39,7 @@ def happymail(body):
 
     mycontext = ssl.create_default_context()
     with smtplib.SMTP(smtp_server, port) as server:
-        server.ehlo()  # Can be omitted
         server.starttls(context=mycontext)
-        server.ehlo()  # Can be omitted
         server.login(email_sender, email_password)
         server.sendmail(email_sender, email_receiver, em.as_string())
 

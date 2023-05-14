@@ -19,6 +19,7 @@ print(gmailpwd)
 datetag = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 filename = 'scraping_result_'+datetag+'.log'
 filemsg = []
+filemsg.append("TESZT TESZT TESZT TESZT")
 
 url = "https://tickets.funcode.hu/event/rammstein-allohely-2023"
 result = requests.get(url)

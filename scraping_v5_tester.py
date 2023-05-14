@@ -17,7 +17,7 @@ gmailpwd = f.read()
 print(gmailpwd)
 
 datetag = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-filename = 'scraping_result_'+datetag+'.log'
+filename = 'TESZT_scraping_result_'+datetag+'.log'
 filemsg = []
 filemsg.append("TESZT TESZT TESZT TESZT")
 

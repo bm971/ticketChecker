@@ -11,14 +11,17 @@ import logging
 
 import pathlib
 scriptpath = pathlib.Path(__file__).parent.resolve()
+print(scriptpath)
 
 auth = open(scriptpath/".AUTH","r")
 gmailpwd = auth.read()
+print(gmailpwd)
 auth.close()
 
 datetag = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 filemsg = []
-logging.basicConfig(level=logging.INFO, filename='/var/log/scripts/ticketChecker/scraping_result.log', format='%(asctime)s %(levelname)s %(message)s', datefmt='%H:%M:%S')
+filemsg.append("TESZT TESZT TESZT TESZT")
+logging.basicConfig(level=logging.INFO, filename='/var/log/scripts/ticketChecker/TESZT_scraping_result.log', format='%(asctime)s %(levelname)s %(message)s', datefmt='%H:%M:%S')
 
 url = "https://tickets.funcode.hu/event/rammstein-allohely-2023"
 result = requests.get(url)
@@ -29,7 +32,7 @@ smtp_server = "smtp.gmail.com"
 email_sender = "bm9711111111@gmail.com"
 email_password = gmailpwd
 email_receiver = "bakonyimark9785@gmail.com"
-subject = "VAN RAMMSTEIN JEEEEEGY!!!!!!!!!!!!!!!!!!!!!"
+subject = "TESZT   VAN RAMMSTEIN JEEEEEGY!!!!!!!!!!!!!!!!!!!!!"
 
 def happymail(body):
     em = EmailMessage()
@@ -51,10 +54,15 @@ def happymail(body):
 # the class I am interested in: <div class="purchase_tickets js-single-event" id="select-tickets" style="margin-top: 0px;">
 
 def createAndSendMail(ticketAvailable):
+    print(ticketAvailable)
     if ticketAvailable == True:
         for data in doc.findAll("div", {"id": "select-tickets"}): # print out the relevant section (the "select-tickets" class) of the website
             print(data)
         happymessage = """
+        ###############################################################################
+        TESZT!!!!  TESZT!!!!  TESZT!!!!  TESZT!!!!  TESZT!!!!  TESZT!!!!  TESZT!!!!  
+        ###############################################################################
+
         Van jegy, kurva gyorsan vegyel!!!!!!!!!!!!
 
         Itt a link te paraszt: https://tickets.funcode.hu/event/rammstein-allohely-2023
@@ -71,15 +79,25 @@ def createAndSendMail(ticketAvailable):
     logging.info(filemsg)
     # logfile = open("/var/log/scripts/ticketChecker/"+filename, "w")
     # logfile.write(str(filemsg))
+    # print(filemsg)
     # logfile.close()
 
 availability = doc.findAll("em")
 ticketTypeNumber = len(availability) # number of elements in the availability array
 if ticketTypeNumber != 4: # if the array lenght is different from the original (4)
     createAndSendMail(True)
+print('Az "em" tagek száma: '+str(ticketTypeNumber))
+print('Az osszes "em" tag tartalma: '+str(availability))
+
+### TEST, torold majd ki!!!!
+availability.pop(3)
+#availability.append(<em>Elfogyott</em>)
+#print(type(availability[1]))
+print('Csokkentett em tages array: '+str(availability))
 
 for i in range(1,ticketTypeNumber):
     try:    
+        print(availability[i].string)
         if availability[i].string != 'Elfogyott':
             createAndSendMail(True)
         else:

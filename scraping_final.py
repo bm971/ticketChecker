@@ -52,20 +52,24 @@ def happymail(body):
 
 def createAndSendMail(ticketAvailable):
     if ticketAvailable == True:
-        for data in doc.findAll("div", {"id": "select-tickets"}): # print out the relevant section (the "select-tickets" class) of the website
-            print(data)
-        happymessage = """
-        Van jegy, kurva gyorsan vegyel!!!!!!!!!!!!
+        while True:
+            try:
+                for data in doc.findAll("div", {"id": "select-tickets"}): # print out the relevant section (the "select-tickets" class) of the website
+                    print(data)
+                happymessage = """
+                Van jegy, kurva gyorsan vegyel!!!!!!!!!!!!
 
-        Itt a link te paraszt: https://tickets.funcode.hu/event/rammstein-allohely-2023
+                Itt a link te paraszt: https://tickets.funcode.hu/event/rammstein-allohely-2023
 
-        ###############################################################################
-        Reszletek:
+                ###############################################################################
+                Reszletek:
 
-        """
-        happymessage += str(data)
-        happymail(happymessage)
-        filemsg.append("Volt elado jegy"+datetag+"-kor:DDDDDDD")
+                """
+                happymessage += str(data)
+                happymail(happymessage)
+                filemsg.append("Volt elado jegy"+datetag+"-kor:DDDDDDD")
+            except Exception as e:
+                logging.info("Gebasz: \n"+e)
     else:
         filemsg.append("Nem volt elado jegy "+datetag+"-kor:(((((")
     logging.info(filemsg)

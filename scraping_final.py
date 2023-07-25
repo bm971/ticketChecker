@@ -59,7 +59,7 @@ def createAndSendMail(ticketAvailable):
                 happymessage = """
                 Van jegy, kurva gyorsan vegyel!!!!!!!!!!!!
 
-                Itt a link te paraszt: https://tickets.funcode.hu/event/rammstein-allohely-2023
+                Itt a link te: https://tickets.funcode.hu/event/rammstein-allohely-2023
 
                 ###############################################################################
                 Reszletek:

@@ -12,10 +12,6 @@ import logging
 import pathlib
 scriptpath = pathlib.Path(__file__).parent.resolve()
 
-auth = open(scriptpath/".AUTH","r")
-gmailpwd = auth.read()
-auth.close()
-
 datetag = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 filemsg = []
 logging.basicConfig(level=logging.INFO, filename='/var/log/scripts/ticketChecker/scraping_result.log', format='%(asctime)s %(levelname)s %(message)s', datefmt='%H:%M:%S')
@@ -26,9 +22,10 @@ doc = BeautifulSoup(result.text, "html.parser")
 
 port = 587  # For starttls
 smtp_server = "smtp.gmail.com"
-email_sender = "bm9711111111@gmail.com"
-email_password = gmailpwd
-email_receiver = "bakonyimark9785@gmail.com"
+with open(scriptpath/'.AUTH', 'r') as f:
+    email_password = f.readline().strip()
+    email_sender = f.readline().strip()
+    email_receiver = f.readline().strip()
 subject = "VAN RAMMSTEIN JEEEEEGY!!!!!!!!!!!!!!!!!!!!!"
 
 def happymail(body):
@@ -52,20 +49,24 @@ def happymail(body):
 
 def createAndSendMail(ticketAvailable):
     if ticketAvailable == True:
-        for data in doc.findAll("div", {"id": "select-tickets"}): # print out the relevant section (the "select-tickets" class) of the website
-            print(data)
-        happymessage = """
-        Van jegy, kurva gyorsan vegyel!!!!!!!!!!!!
+        while True:
+            try:
+                for data in doc.findAll("div", {"id": "select-tickets"}): # print out the relevant section (the "select-tickets" class) of the website
+                    print(data)
+                happymessage = """
+                Van jegy, kurva gyorsan vegyel!!!!!!!!!!!!
 
-        Itt a link te paraszt: https://tickets.funcode.hu/event/rammstein-allohely-2023
+                Itt a link: https://tickets.funcode.hu/event/rammstein-allohely-2023
 
-        ###############################################################################
-        Reszletek:
+                ###############################################################################
+                Reszletek:
 
-        """
-        happymessage += str(data)
-        happymail(happymessage)
-        filemsg.append("Volt elado jegy"+datetag+"-kor:DDDDDDD")
+                """
+                happymessage += str(data)
+                happymail(happymessage)
+                filemsg.append("Volt elado jegy"+datetag+"-kor:DDDDDDD")
+            except Exception as e:
+                logging.info("Gebasz: \n"+e)
     else:
         filemsg.append("Nem volt elado jegy "+datetag+"-kor:(((((")
     logging.info(filemsg)

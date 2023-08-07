@@ -13,11 +13,6 @@ import pathlib
 scriptpath = pathlib.Path(__file__).parent.resolve()
 print(scriptpath)
 
-auth = open(scriptpath/".AUTH","r")
-gmailpwd = auth.read()
-print(gmailpwd)
-auth.close()
-
 datetag = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 filemsg = []
 filemsg.append("TESZT TESZT TESZT TESZT")
@@ -29,9 +24,11 @@ doc = BeautifulSoup(result.text, "html.parser")
 
 port = 587  # For starttls
 smtp_server = "smtp.gmail.com"
-email_sender = "bm9711111111@gmail.com"
-email_password = gmailpwd
-email_receiver = "bakonyimark9785@gmail.com"
+with open(scriptpath/'.AUTH', 'r') as f:
+    email_password = f.readline().strip()
+    email_sender = f.readline().strip()
+    email_receiver = f.readline().strip()
+print('emailpwd: '+email_password+'\nsendermail: '+email_sender+'\ntargetmail: '+email_receiver)
 subject = "TESZT   VAN RAMMSTEIN JEEEEEGY!!!!!!!!!!!!!!!!!!!!!"
 
 def happymail(body):
@@ -65,7 +62,7 @@ def createAndSendMail(ticketAvailable):
 
         Van jegy, kurva gyorsan vegyel!!!!!!!!!!!!
 
-        Itt a link te paraszt: https://tickets.funcode.hu/event/rammstein-allohely-2023
+        Itt a link: https://tickets.funcode.hu/event/rammstein-allohely-2023
 
         ###############################################################################
         Reszletek:

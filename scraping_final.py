@@ -12,10 +12,6 @@ import logging
 import pathlib
 scriptpath = pathlib.Path(__file__).parent.resolve()
 
-auth = open(scriptpath/".AUTH","r")
-gmailpwd = auth.read()
-auth.close()
-
 datetag = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 filemsg = []
 logging.basicConfig(level=logging.INFO, filename='/var/log/scripts/ticketChecker/scraping_result.log', format='%(asctime)s %(levelname)s %(message)s', datefmt='%H:%M:%S')
@@ -26,9 +22,10 @@ doc = BeautifulSoup(result.text, "html.parser")
 
 port = 587  # For starttls
 smtp_server = "smtp.gmail.com"
-email_sender = "bm9711111111@gmail.com"
-email_password = gmailpwd
-email_receiver = "bakonyimark9785@gmail.com"
+with open(scriptpath/'.AUTH', 'r') as f:
+    email_password = f.readline().strip()
+    email_sender = f.readline().strip()
+    email_receiver = f.readline().strip()
 subject = "VAN RAMMSTEIN JEEEEEGY!!!!!!!!!!!!!!!!!!!!!"
 
 def happymail(body):

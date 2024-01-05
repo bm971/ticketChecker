@@ -18,6 +18,6 @@ on remote host:
 
 in crontab:
 ```sh
-2 * * * * /home/ubuntu/scripts/ticketChecker/scraping_final.py
-5 * * * * /usr/bin/logrotate /home/ubuntu/logrotate.conf --state /home/ubuntu/logrotate-state
+6 * * * * /home/ubuntu/scripts/ticketChecker/scraping_final.py
+0 23 * * * /sbin/logrotate /home/ubuntu/logrotate.conf --state /home/ubuntu/logrotate-state --verbose
 ```

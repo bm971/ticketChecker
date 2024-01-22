@@ -8,17 +8,24 @@ import smtplib
 import ssl
 import datetime
 import logging
+import re
 
 import pathlib
 scriptpath = pathlib.Path(__file__).parent.resolve()
 
 datetag = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-filemsg = []
+#filemsg = []
 logging.basicConfig(level=logging.INFO, filename='/var/log/scripts/ticketChecker/scraping_result.log', format='%(asctime)s %(levelname)s %(message)s', datefmt='%H:%M:%S')
 
-url = "https://tickets.efinity.rs/CardType/EventInfo?cardTypeId=30621" # 25.05.2024
-#url = "https://tickets.efinity.rs/CardType/EventInfo?cardTypeId=30620" # 24.05.2024
-result = requests.get(url)
+url = "https://tickets.efinity.rs/CardType/EventInfo?cardTypeId=30621" # event date: 25.05.2024 for TEST purpuses
+#url = "https://tickets.efinity.rs/CardType/EventInfo?cardTypeId=30620" # event date: 24.05.2024 -> desired date
+try:
+    result = requests.get(url)
+    print('SIKERES scraping')
+except Exception as sucks:
+    filemsg = "Gebasz: \n"+sucks
+    logging.info(filemsg)
+    print('uzenet ha nem sikerult ha SIKERTELEN!!! scraping, hibauzenet: '+filemsg)
 doc = BeautifulSoup(result.text, "html.parser")
 
 port = 587  # For starttls
@@ -66,24 +73,46 @@ def createAndSendMail(ticketAvailable):
                 """
                 happymessage += str(data)
                 happymail(happymessage)
-                filemsg.append("Volt elado jegy"+datetag+"-kor:DDDDDDD")
-            except Exception as szopo:
-                logging.info("Gebasz: \n"+szopo)
+                filemsg = """Volt elado jegy """+datetag+"""-kor:DDDDDDD
+                """+str(data)
+                print('filemsg, ez keril a logba: uzenet+teljes HTML class: '+filemsg)
+            except Exception as sucks:
+                filemsg = "Gebasz: \n"+sucks
+                logging.info(filemsg)
+                print(filemsg)
     else:
-        filemsg.append("Nem volt elado jegy "+datetag+"-kor:(((((")
+        filemsg = """Nem volt elado jegy """+datetag+"""-kor:(((((
+        """+str(data)
+        print('filemsg, ez keril a logba: uzenet+teljes HTML class: '+filemsg)
     logging.info(filemsg)
-    # logfile = open("/var/log/scripts/ticketChecker/"+filename, "w")
-    # logfile.write(str(filemsg))
-    # logfile.close()
 
-availability = doc.findAll("p")
-ticketTypeNumber = len(availability) # number of elements in the availability array
+def compare_strings(string2compare,mypattern):
+    pattern = re.compile(mypattern)
+    match = re.search(pattern, string2compare)
+    if match:
+        print(f" comparing: '{mypattern}' found in '{string2compare}' TRUE")
+        return True
+    else:
+        print(f" comparing:'{mypattern}' not found in '{string2compare}' FALSE")
+        return False
 
-for i in range(1,ticketTypeNumber):
-    try:    
-        if availability[i].string != 'FeuerZone: SOLD OUT':
-            createAndSendMail(True)
-        else:
-            createAndSendMail(False)
+############# Start of action ################
+
+patterntext1 = 'FeuerZone'
+patterntext2 = 'SOLD'
+interestingSection = doc.findAll("p")
+print('interestingSection, itt van az osszes p sor amit keresek: '+str(interestingSection))
+lengthOfInterest = len(interestingSection) # number of elements in the interestingSection array
+print('lengthOfInterest, osszes p amit talalt a vizsgalt reszben, interestingSection array szamossaga: '+str(lengthOfInterest))
+
+for i in range(1,lengthOfInterest): # miert 1-tol kezdodik???
+    try:
+        string2check = interestingSection[i].string
+        print('string to check, actual element of array: '+string2check)
+        if compare_strings(string2check, patterntext1) == True:
+            if compare_strings(string2check, patterntext2) == True:
+                createAndSendMail(True)
+            else:
+                createAndSendMail(False)
     except:
         createAndSendMail(True) # lehet eleg lenne break is de biztosra megyek inkabb

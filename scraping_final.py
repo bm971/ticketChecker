@@ -16,7 +16,8 @@ datetag = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 filemsg = []
 logging.basicConfig(level=logging.INFO, filename='/var/log/scripts/ticketChecker/scraping_result.log', format='%(asctime)s %(levelname)s %(message)s', datefmt='%H:%M:%S')
 
-url = "https://tickets.funcode.hu/event/rammstein-allohely-2023"
+url = "https://tickets.efinity.rs/CardType/EventInfo?cardTypeId=30621" # 25.05.2024
+#url = "https://tickets.efinity.rs/CardType/EventInfo?cardTypeId=30620" # 24.05.2024
 result = requests.get(url)
 doc = BeautifulSoup(result.text, "html.parser")
 
@@ -42,21 +43,22 @@ def happymail(body):
         server.sendmail(email_sender, email_receiver, em.as_string())
 
 ### ORIGINAL STATUS when there is no aviailable ticket
-# list of all "em" tags:
-# [<em style="color: red;">Figyelem</em>, <em>Elfogyott</em>, <em>Elfogyott</em>, <em>Elfogyott</em>]
-# original lenght of the availability array: 4
-# the class I am interested in: <div class="purchase_tickets js-single-event" id="select-tickets" style="margin-top: 0px;">
+# <p>TICKET PRICES:&#xD;&#xA;</p>
+# <p>GA/Standing: 8.900 RSD</p>
+# <p>FeuerZone: SOLD OUT</p>
+# <p>Seating: SOLD OUT</p>
+# <p>Important Notice:&#xD;&#xA;</p>
 
 def createAndSendMail(ticketAvailable):
     if ticketAvailable == True:
         while True:
             try:
-                for data in doc.findAll("div", {"id": "select-tickets"}): # print out the relevant section (the "select-tickets" class) of the website
+                for data in doc.findAll("div", {"class": "text-container"}): # print out the relevant section (the "text-container" class) of the website
                     print(data)
                 happymessage = """
                 Van jegy, kurva gyorsan vegyel!!!!!!!!!!!!
 
-                Itt a link: https://tickets.funcode.hu/event/rammstein-allohely-2023
+                Itt a link:"""+url+"""
 
                 ###############################################################################
                 Reszletek:
@@ -65,8 +67,8 @@ def createAndSendMail(ticketAvailable):
                 happymessage += str(data)
                 happymail(happymessage)
                 filemsg.append("Volt elado jegy"+datetag+"-kor:DDDDDDD")
-            except Exception as e:
-                logging.info("Gebasz: \n"+e)
+            except Exception as szopo:
+                logging.info("Gebasz: \n"+szopo)
     else:
         filemsg.append("Nem volt elado jegy "+datetag+"-kor:(((((")
     logging.info(filemsg)
@@ -74,14 +76,12 @@ def createAndSendMail(ticketAvailable):
     # logfile.write(str(filemsg))
     # logfile.close()
 
-availability = doc.findAll("em")
+availability = doc.findAll("p")
 ticketTypeNumber = len(availability) # number of elements in the availability array
-if ticketTypeNumber != 4: # if the array lenght is different from the original (4)
-    createAndSendMail(True)
 
 for i in range(1,ticketTypeNumber):
     try:    
-        if availability[i].string != 'Elfogyott':
+        if availability[i].string != 'FeuerZone: SOLD OUT':
             createAndSendMail(True)
         else:
             createAndSendMail(False)
